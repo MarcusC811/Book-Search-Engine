@@ -34,6 +34,30 @@ const resolvers = {
             const token = signToken(user);
             return { token, user };
         },
+        saveBook: async (parent, args) => {
+            console.log(args);
+            try {
+            const updatedUser = await User.findOneAndUpdate(
+                { _id: args._id },
+                { $addToSet: { savedBooks: args.body } },
+                { new: true, runValidators: true }
+            );
+            return updatedUser;
+            } catch (err) {
+            return console.log(err);
+            }
+        },
+        deleteBook: async (parent, args) => {
+            const updatedUser = await User.findOneAndUpdate(
+                { _id: args._id },
+                { $pull: { savedBooks: { bookId: args.bookId } } },
+                { new: true }
+              );
+              if (!updatedUser) {
+                return console.log("Couldn't find user with this id!");
+              }
+              return updatedUser;
+        },
     }
 }
 
